@@ -2,11 +2,11 @@ import sys
 import urllib3
 import requests
 import argparse
-#from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-print("""
+print("""\u001b[32m
  /$$$$$$$  /$$      /$$  /$$$$$$ 
 | $$__  $$| $$$    /$$$ /$$__  $$
 | $$  \ $$| $$$$  /$$$$| $$  \__/
@@ -14,7 +14,7 @@ print("""
 | $$  | $$| $$  $$$| $$| $$      
 | $$  | $$| $$\  $ | $$| $$    $$
 | $$$$$$$/| $$ \/  | $$|  $$$$$$/
-|_______/ |__/     |__/ \______/
+|_______/ |__/     |__/ \______/\u001b[0m
 	
 		     by: dhelthaX
 	""")
@@ -31,25 +31,24 @@ if args.domain == None and args.wordlist == None:
 
 WORDLIST = args.wordlist
 URL = args.domain
-HEADERS = {"User-Agent":"Mozilla/5.0 (X11; Linux x86_64; rv:75.0) Gecko/20100101 Firefox/75.0", "Referer": "https://dmarcian.com/", "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "X-Requested-With": "XMLHttpRequest"}
 
-def getDMARC(site, dom):
-	r = requests.post('https://dmarcian.com/wp-admin/admin-ajax.php', data=site, headers=HEADERS)
+def getDMARC(site):
+	r = requests.get(f'https://dmarcly.com/server/dmarc_check.php?domain={site}')
 	rjson = r.json()
-	if rjson["payload"]["valid"] == False:
-		print(f'{rjson["payload"]["messages"][1]["text"]} for {dom}')
-		print("="*40)
+	if rjson["code"] == 'success':
+		print(f"\u001b[34mThe domain :\'{site}\' contains a valid DMARC record\u001b[0m")
+		print(f'Host: \'{rjson["dmarcRecords"][0]["host"]}\'')
+		print(f'Record: {rjson["dmarcRecords"][0]["txt"]}')
+		print("\u001b[33m="*50+"\u001b[0m")
 	else:
-		print(f"Valid DMARC found for {dom}")
-		print(str(rjson["payload"]["records"][0]["txt"]))
-		print("="*40)
+		print(f"\u001b[31mDMARC record not found for \u001b[0m\'{site}\'")
+		print("\u001b[33m="*50+"\u001b[0m")
 
 if __name__ == '__main__':
 	if args.wordlist:
-		f = open(WORDLIST, "r")
-		for x in f:
-			DATA = f'action=dm_integration_inspect_dmarc&domain={x}&security=69879e3ab6'
-			getDMARC(str(DATA), str(x))
+		f = open(WORDLIST, "r").read()
+		l = f.splitlines()
+		with ThreadPoolExecutor() as executor:
+			executor.map(getDMARC, l, timeout=3)
 	else:
-		DATA = f'action=dm_integration_inspect_dmarc&domain={URL}&security=69879e3ab6'
-		getDMARC(DATA, URL)
+		getDMARC(URL)
