@@ -3,10 +3,6 @@ DMC ![](https://cdn.discordapp.com/attachments/666990519913807875/72830710163334
 ![pythonVer](https://img.shields.io/badge/python-v3.7-blue)
 [![Twitter](https://img.shields.io/badge/twitter-@DhtX_-blue.svg)](https://twitter.com/DhtX_)
 
-## Table of Contents
-
-[TOC]
-
 ## Beginners Guide
 
 This is a tool to check DMARC records for certain domains.
@@ -36,8 +32,6 @@ python3 DMC.py -w /path/to/domainlist
 
 ## Appendix and FAQ
 
-:::info
-[**Find any bug?** Feel free to submit your issue!](https://github.com/DhelthaX/DMC/issues)
-:::
+[**Find any bug?** Feel free to submit your issue!](https://github.com/DhelthaX/DMC/issues) :thumbsup:
 
 ###### tags: `DMARC` `SPF` `DKIM` `EMAIL` `DNS`
